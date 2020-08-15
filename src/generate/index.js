@@ -38,28 +38,19 @@ function injectListBetweenTags(newContent) {
 }
 
 function formatLine(contributors) {
-  return `<td align="center">${contributors.join(
-    '</td>\n    <td align="center">',
-  )}</td>`
+  return `${contributors.join(' ')}`;
 }
 
 function generateContributorsList(options, contributors) {
-  return _.flow(
-    _.sortBy(contributor => {
-      if (options.contributorsSortAlphabetically) {
-        return contributor.name
-      }
-    }),
-    _.map(function formatEveryContributor(contributor) {
-      return formatContributor(options, contributor)
-    }),
-    _.chunk(options.contributorsPerLine),
-    _.map(formatLine),
-    _.join('\n  </tr>\n  <tr>\n    '),
-    newContent => {
-      return `\n<table>\n  <tr>\n    ${newContent}\n  </tr>\n</table>\n\n`
-    },
-  )(contributors)
+  return _.flow(_.sortBy(function (contributor) {
+    if (options.contributorsSortAlphabetically) {
+      return contributor.name;
+    }
+  }), _.map(function (contributor) {
+    return formatContributor(options, contributor);
+  }), _.chunk(options.contributorsPerLine), _.map(formatLine), _.join('\n'), function (newContent) {
+    return `\n\n\n${newContent}\n\n\n`;
+  })(contributors);
 }
 
 function replaceBadge(newContent) {
